@@ -1,8 +1,10 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-
 const connectDB = require("./config/db");
+
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./config/swagger");
 
 dotenv.config();
 
@@ -13,6 +15,7 @@ const app = express();
 app.use(cors({
   origin: "*"
 }));
+
 
 app.use(express.json());
 
@@ -31,6 +34,12 @@ app.get("/", (req, res) => {
 
 
 const PORT = process.env.PORT || 5000;
+
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
