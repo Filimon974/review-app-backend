@@ -173,85 +173,157 @@ SEARCH & FILTER PLACES
 ====================================
 */
 
-exports.searchPlaces = async (req, res) => {
+exports.searchPlaces =
+  async (req, res) => {
 
-  try {
+    try {
 
-    const {
-      search,
-      category,
-      location,
-      tag
-    } = req.query;
+      const {
+        search,
+        category,
+        tag,
+        sort,
+        rating
+      } = req.query;
 
-    let query = {};
 
 
-    /*
-    ==============================
-    SEARCH BY NAME
-    ==============================
-    */
+      let query = {};
 
-    if (search) {
-      query.name = {
-        $regex: search,
-        $options: "i"
+
+
+      /*
+      =========================
+      SEARCH TEXT
+      =========================
+      */
+
+      if (search) {
+
+        query.$or = [
+
+          {
+            name: {
+              $regex: search,
+              $options: "i"
+            }
+          },
+
+          {
+            location: {
+              $regex: search,
+              $options: "i"
+            }
+          }
+
+        ];
+
+      }
+
+
+
+      /*
+      =========================
+      CATEGORY
+      =========================
+      */
+
+      if (category) {
+
+        query.category =
+          category;
+
+      }
+
+
+
+      /*
+      =========================
+      TAG
+      =========================
+      */
+
+      if (tag) {
+
+        query.tags = tag;
+
+      }
+
+
+
+      /*
+      =========================
+      RATING
+      =========================
+      */
+
+      if (rating) {
+
+        query.averageRating = {
+          $gte: Number(rating)
+        };
+
+      }
+
+
+
+      /*
+      =========================
+      SORT
+      =========================
+      */
+
+      let sortOption = {
+        createdAt: -1
       };
-    }
 
 
-    /*
-    ==============================
-    CATEGORY FILTER
-    ==============================
-    */
 
-    if (category) {
-      query.category = category;
-    }
+      if (sort === "popular") {
 
+        sortOption = {
+          reviewsCount: -1
+        };
 
-    /*
-    ==============================
-    LOCATION FILTER
-    ==============================
-    */
-
-    if (location) {
-      query.location = {
-        $regex: location,
-        $options: "i"
-      };
-    }
+      }
 
 
-    /*
-    ==============================
-    TAG FILTER
-    ==============================
-    */
 
-    if (tag) {
-      query.tags = tag;
-    }
+      if (sort === "newest") {
+
+        sortOption = {
+          createdAt: -1
+        };
+
+      }
 
 
-    const places = await Place.find(query)
-      .populate("tags", "name")
-      .sort({
-        averageRating: -1,
-        totalReviews: -1
+
+      if (sort === "rating") {
+
+        sortOption = {
+          averageRating: -1
+        };
+
+      }
+
+
+
+      const places =
+        await Place.find(query)
+          .populate("tags")
+          .sort(sortOption);
+
+
+
+      res.json(places);
+
+    } catch (error) {
+
+      res.status(500).json({
+        message: error.message
       });
 
-    res.json(places);
+    }
 
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message
-    });
-
-  }
-
-};
+  };
