@@ -338,3 +338,175 @@ exports.getReviewById = async (
   }
 
 };
+
+/*
+====================================
+SEARCH REVIEWS
+====================================
+*/
+
+exports.searchReviews = async (
+  req,
+  res
+) => {
+
+  try {
+
+    const {
+      search,
+      category,
+      tag,
+      user,
+      sort
+    } = req.query;
+
+
+
+    /*
+    ============================
+    BUILD FILTER
+    ============================
+    */
+
+    const filter = {};
+
+
+
+    // TAG
+    if (tag) {
+      filter.tags = tag;
+    }
+
+
+
+    /*
+    ============================
+    FIND REVIEWS
+    ============================
+    */
+
+    let reviews = await Review.find(filter)
+
+      .populate(
+        "user",
+        "name username avatar"
+      )
+
+      .populate(
+        "place",
+        "name category averageRating photos"
+      )
+
+      .populate(
+        "tags",
+        "name"
+      );
+
+
+
+    /*
+    ============================
+    PLACE NAME SEARCH
+    ============================
+    */
+
+    if (search) {
+
+      reviews = reviews.filter(review =>
+
+        review.place?.name
+          ?.toLowerCase()
+          .includes(
+            search.toLowerCase()
+          )
+
+      );
+
+    }
+
+
+
+    /*
+    ============================
+    CATEGORY FILTER
+    ============================
+    */
+
+    if (category) {
+
+      reviews = reviews.filter(review =>
+
+        review.place?.category ===
+        category
+
+      );
+
+    }
+
+
+
+    /*
+    ============================
+    USER FILTER
+    ============================
+    */
+
+    if (user) {
+
+      reviews = reviews.filter(review =>
+
+        review.user?.name
+          ?.toLowerCase()
+          .includes(
+            user.toLowerCase()
+          ) ||
+
+        review.user?.username
+          ?.toLowerCase()
+          .includes(
+            user.toLowerCase()
+          )
+
+      );
+
+    }
+
+
+
+    /*
+    ============================
+    SORTING
+    ============================
+    */
+
+    if (sort === "popular") {
+
+      reviews.sort(
+        (a, b) =>
+          b.likesCount -
+          a.likesCount
+      );
+
+    } else {
+
+      reviews.sort(
+        (a, b) =>
+          new Date(b.createdAt) -
+          new Date(a.createdAt)
+      );
+
+    }
+
+
+
+    res.json(reviews);
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: error.message
+    });
+
+  }
+
+};

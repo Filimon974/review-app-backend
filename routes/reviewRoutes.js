@@ -8,7 +8,8 @@ const {
   updateReview,
   deleteReview,
   getReviewById,
-  toggleLikeReview
+  toggleLikeReview,
+  searchReviews
 } = require("../controllers/reviewController");
 
 const {
@@ -65,7 +66,7 @@ router.post(
   createReview
 );
 
-
+router.get("/search", searchReviews);;
 
 
 /**
