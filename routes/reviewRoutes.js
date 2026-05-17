@@ -66,6 +66,51 @@ router.post(
   createReview
 );
 
+```js
+/**
+ * @swagger
+ * /reviews/search:
+ *   get:
+ *     summary: Search and filter reviews
+ *     description: Search reviews by text, tags, rating, or place.
+ *     tags: [Reviews]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search review text
+ *         example: amazing food
+ *
+ *       - in: query
+ *         name: tag
+ *         schema:
+ *           type: string
+ *         description: Tag ID
+ *         example: 685f9a12c45a2f1234567890
+ *
+ *       - in: query
+ *         name: rating
+ *         schema:
+ *           type: number
+ *         description: Filter by rating
+ *         example: 5
+ *
+ *       - in: query
+ *         name: place
+ *         schema:
+ *           type: string
+ *         description: Place ID
+ *         example: 685f9a12c45a2f1234567890
+ *
+ *     responses:
+ *       200:
+ *         description: Reviews fetched successfully
+ *       500:
+ *         description: Server error
+ */
+```
+
 router.get("/search", searchReviews);;
 
 
