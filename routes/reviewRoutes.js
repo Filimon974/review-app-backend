@@ -66,7 +66,7 @@ router.post(
   createReview
 );
 
-```js
+
 /**
  * @swagger
  * /reviews/search:
@@ -109,7 +109,7 @@ router.post(
  *       500:
  *         description: Server error
  */
-```
+
 
 router.get("/search", searchReviews);;
 
