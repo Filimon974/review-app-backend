@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const tagRoutes = require("./routes/tagRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
@@ -29,6 +30,7 @@ app.use("/api/feed", require("./routes/feedRoutes"));
 app.use("/api/users",require("./routes/userRoutes"));
 app.use("/api/upload", require("./routes/uploadRoutes"));
 app.use("/api/tags", tagRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Running");
